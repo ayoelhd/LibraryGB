@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class CategoryResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id'      => $this->id,
+            'name'    => $this->name,
+            'details' => $this->details,
+            // Only included when the controller loaded the relation
+            'books'   => BookResource::collection($this->whenLoaded('books')),
+        ];
+    }
+}
