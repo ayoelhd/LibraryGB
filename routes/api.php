@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\StaffAuthController;
@@ -15,6 +17,14 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/staff',        [StaffController::class, 'store']);
     Route::get('/staff-me',      [StaffAuthController::class, 'me']);
     Route::post('/staff-logout', [StaffAuthController::class, 'logout']);
+
+    // Only staff can create, update and delete categories and books
+    Route::post('/category',              [CategoryController::class, 'store']);
+    Route::put('/category/{category}',    [CategoryController::class, 'update']);
+    Route::delete('/category/{category}', [CategoryController::class, 'destroy']);
+    Route::post('/book',          [BookController::class, 'store']);
+    Route::put('/book/{book}',    [BookController::class, 'update']);
+    Route::delete('/book/{book}', [BookController::class, 'destroy']);
 });
 
 // Customer routes: only a CUSTOMER token is accepted
@@ -23,6 +33,14 @@ Route::middleware('auth:customers')->group(function () {
     Route::post('/customer-logout', [CustomerAuthController::class, 'logout']);
     Route::apiResource('customer', CustomerController::class)
         ->parameter('customer', 'customer');
+});
+
+// Reading categories and books: ANY valid token (staff or customer)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/category',            [CategoryController::class, 'index']);
+    Route::get('/category/{category}', [CategoryController::class, 'show']);
+    Route::get('/book/{book}',         [BookController::class, 'show']);
+    Route::get('/book',                [BookController::class, 'index']);
 });
 
 // Public: the two logins
