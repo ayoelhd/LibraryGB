@@ -25,4 +25,12 @@ class Customer extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    // Many-to-many: a customer borrows many books, through the borrowings table
+    public function books()
+    {
+        return $this->belongsToMany(Book::class, 'borrowings')
+            ->withPivot('borrowing_date', 'return_date', 'is_returned')
+            ->withTimestamps();
+    }
 }
