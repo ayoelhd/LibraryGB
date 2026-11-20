@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BorrowingsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\CustomerController;
@@ -25,6 +26,9 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/book',          [BookController::class, 'store']);
     Route::put('/book/{book}',    [BookController::class, 'update']);
     Route::delete('/book/{book}', [BookController::class, 'destroy']);
+
+    // Staff mark a borrowed book as returned (takes a customer_id, so staff only)
+    Route::put('/borrow', [BorrowingsController::class, 'markAsReturned']);
 });
 
 // Customer routes: only a CUSTOMER token is accepted
@@ -33,6 +37,11 @@ Route::middleware('auth:customers')->group(function () {
     Route::post('/customer-logout', [CustomerAuthController::class, 'logout']);
     Route::apiResource('customer', CustomerController::class)
         ->parameter('customer', 'customer');
+
+    // Borrowings: the customer comes from the token
+    Route::post('/borrow',        [BorrowingsController::class, 'borrow']);
+    Route::get('/borrow',         [BorrowingsController::class, 'index']);
+    Route::delete('/borrow/{id}', [BorrowingsController::class, 'destroy']);
 });
 
 // Reading categories and books: ANY valid token (staff or customer)
