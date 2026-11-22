@@ -55,3 +55,4 @@ Route::middleware('auth:sanctum')->group(function () {
 // Public: the two logins
 Route::post('/staff/login',    [StaffAuthController::class, 'login']);
 Route::post('/customer/login', [CustomerAuthController::class, 'login']);
+Route::post('/customer/register', [CustomerAuthController::class, 'register']);
