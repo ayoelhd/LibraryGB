@@ -32,6 +32,7 @@ Route::middleware('auth:staff')->group(function () {
         ->parameter('customer', 'customer');
     Route::put('/borrow', [BorrowingsController::class, 'markAsReturned']);
     Route::get('/borrow/all', [BorrowingsController::class, 'all']);
+    Route::get('/borrow/overdue', [BorrowingsController::class, 'overdue']);
 });
 
 // Customer routes: only a CUSTOMER token is accepted
