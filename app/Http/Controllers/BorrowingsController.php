@@ -25,6 +25,18 @@ class BorrowingsController extends Controller
             'return_date'    => ['required', 'date', 'after:borrowing_date'],
         ]);
 
+
+            // A customer may have at most 3 books out at once
+        $openCount = auth()->user()->books()
+            ->wherePivot('is_returned', false)
+            ->count();
+
+        if ($openCount >= 3) {
+            return response()->json([
+                'message' => 'You already have 3 open borrowings',
+            ], 422);
+        }
+
         // Is this book already out (not returned) during these dates?
         $isTaken = Book::find($data['book_id'])->customers()
             ->wherePivot('is_returned', false)
