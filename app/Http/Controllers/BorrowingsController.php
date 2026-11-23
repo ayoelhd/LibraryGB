@@ -6,6 +6,7 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Borrowing;
+use App\Http\Requests\BorrowRequest;
 
 class BorrowingsController extends Controller
 {
@@ -18,13 +19,11 @@ class BorrowingsController extends Controller
     }
 
     // Customer: borrow a book. The customer comes from the token, never from the body.
-    public function borrow(Request $request)
+    public function borrow(BorrowRequest $request)
     {
-        $data = $request->validate([
-            'book_id'        => ['required', 'exists:books,id'],
-            'borrowing_date' => ['required', 'date', 'after_or_equal:today'],
-            'return_date'    => ['required', 'date', 'after:borrowing_date'],
-        ]);
+        
+    
+        $data = $request->validated();
 
 
             // A customer may have at most 3 books out at once
