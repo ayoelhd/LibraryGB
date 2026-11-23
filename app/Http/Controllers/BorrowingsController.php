@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Models\Book;
+use App\Models\Borrowing;
 
 class BorrowingsController extends Controller
 {
@@ -97,5 +98,18 @@ class BorrowingsController extends Controller
             'book_id'        => $borrowing->id,
             'borrowing_date' => $borrowing->pivot->borrowing_date,
         ]);
+    }
+
+
+        // Staff: every borrowing, with its customer and book. ?is_returned=0 shows only open ones.
+    public function all(Request $request)
+    {
+        $query = Borrowing::with(['customer', 'book']);
+
+        if ($request->has('is_returned')) {
+            $query->where('is_returned', $request->is_returned);
+        }
+
+        return response()->json($query->get());
     }
 }

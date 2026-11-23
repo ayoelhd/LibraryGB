@@ -31,6 +31,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::apiResource('customer', CustomerController::class)
         ->parameter('customer', 'customer');
     Route::put('/borrow', [BorrowingsController::class, 'markAsReturned']);
+    Route::get('/borrow/all', [BorrowingsController::class, 'all']);
 });
 
 // Customer routes: only a CUSTOMER token is accepted
