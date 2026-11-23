@@ -6,6 +6,7 @@ use App\Http\Requests\StaffStoreRequest;
 use App\Http\Requests\StaffUpdateRequest;
 use App\Http\Resources\StaffResource;
 use App\Models\Staff;
+use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
@@ -16,7 +17,7 @@ class StaffController extends Controller
 
     public function store(StaffStoreRequest $request)
     {
-        if (auth()->user()->role !== 'admin') {
+        if ($request->user()->role !== 'admin') {
             return response()->json([
                 'message' => 'Only admins can do this',
             ], 403);
@@ -34,7 +35,7 @@ class StaffController extends Controller
 
     public function update(StaffUpdateRequest $request, $id)
     {
-        if (auth()->user()->role !== 'admin') {
+        if ($request->user()->role !== 'admin') {
             return response()->json([
                 'message' => 'Only admins can do this',
             ], 403);
@@ -46,9 +47,9 @@ class StaffController extends Controller
         return StaffResource::make($staff);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        if (auth()->user()->role !== 'admin') {
+        if ($request->user()->role !== 'admin') {
             return response()->json([
                 'message' => 'Only admins can do this',
             ], 403);

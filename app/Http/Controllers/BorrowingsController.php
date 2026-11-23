@@ -10,9 +10,9 @@ use App\Models\Borrowing;
 class BorrowingsController extends Controller
 {
     // Customer: list my borrowed books, each with a "pivot" object (dates + is_returned)
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         return response()->json(['data' => $user->books]);
     }
@@ -28,7 +28,7 @@ class BorrowingsController extends Controller
 
 
             // A customer may have at most 3 books out at once
-        $openCount = auth()->user()->books()
+        $openCount = $request->user()->books()
             ->wherePivot('is_returned', false)
             ->count();
 
@@ -51,7 +51,7 @@ class BorrowingsController extends Controller
             ], 422);
         }
 
-        auth()->user()->books()->attach(
+        $request->user()->books()->attach(
             $data['book_id'],
             [
                 'borrowing_date' => $data['borrowing_date'],
@@ -67,9 +67,9 @@ class BorrowingsController extends Controller
 
 
     // Customer: cancel an open borrowing that hasn't started yet. History stays.
-    public function destroy($id)
+    public function destroy(Request $request, int $id)
     {
-        $deleted = auth()->user()->books()
+        $deleted = $request->user()->books()
             ->wherePivot('is_returned', false)
             ->wherePivot('borrowing_date', '>', now()->toDateString())
             ->detach($id);
