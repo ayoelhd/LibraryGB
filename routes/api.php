@@ -28,6 +28,8 @@ Route::middleware('auth:staff')->group(function () {
     Route::delete('/book/{book}', [BookController::class, 'destroy']);
 
     // Staff mark a borrowed book as returned (takes a customer_id, so staff only)
+    Route::apiResource('customer', CustomerController::class)
+        ->parameter('customer', 'customer');
     Route::put('/borrow', [BorrowingsController::class, 'markAsReturned']);
 });
 
@@ -35,8 +37,7 @@ Route::middleware('auth:staff')->group(function () {
 Route::middleware('auth:customers')->group(function () {
     Route::get('/customer-me',      [CustomerAuthController::class, 'me']);
     Route::post('/customer-logout', [CustomerAuthController::class, 'logout']);
-    Route::apiResource('customer', CustomerController::class)
-        ->parameter('customer', 'customer');
+    
 
     // Borrowings: the customer comes from the token
     Route::post('/borrow',        [BorrowingsController::class, 'borrow']);
