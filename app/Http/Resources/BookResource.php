@@ -16,6 +16,10 @@ class BookResource extends JsonResource
             'author'       => $this->author,
             'publisher'    => $this->publisher,
             'publish_date' => $this->publish_date,
+            // Free right now = no open borrowing
+            'is_available' => ! $this->customers()
+                ->wherePivot('is_returned', false)
+                ->exists(),
             // Only included when the controller loaded the relation
             'category'     => CategoryResource::make($this->whenLoaded('category')),
         ];
