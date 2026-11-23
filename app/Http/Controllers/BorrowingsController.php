@@ -20,8 +20,8 @@ class BorrowingsController extends Controller
     {
         $data = $request->validate([
             'book_id'        => ['required', 'exists:books,id'],
-            'borrowing_date' => ['required', 'date'],
-            'return_date'    => ['required', 'date'],
+            'borrowing_date' => ['required', 'date', 'after_or_equal:today'],
+            'return_date'    => ['required', 'date', 'after:borrowing_date'],
         ]);
 
         // attach($ids, $pivotColumns): first the book id, then the extra columns
