@@ -46,6 +46,13 @@ class BookController extends Controller
 
     public function destroy(Book $book)
     {
+        // A book with borrowing records can't be deleted (foreign key)
+        if ($book->customers()->exists()) {
+            return response()->json([
+                'message' => 'This book has borrowing records and cannot be deleted.',
+            ], 409);
+        }
+
         $book->delete();
 
         return response()->json(['message' => 'deleted']);

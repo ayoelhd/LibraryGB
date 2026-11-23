@@ -63,6 +63,26 @@ class BorrowingsController extends Controller
         return response()->json(['message' => 'Book borrowed successfully'], 201);
     }
 
+
+
+
+    // Customer: cancel an open borrowing that hasn't started yet. History stays.
+    public function destroy($id)
+    {
+        $deleted = auth()->user()->books()
+            ->wherePivot('is_returned', false)
+            ->wherePivot('borrowing_date', '>', now()->toDateString())
+            ->detach($id);
+
+        if ($deleted === 0) {
+            return response()->json([
+                'message' => 'You can only cancel a borrowing before its start date',
+            ], 404);
+        }
+
+        return response()->json(['message' => 'done']);
+    }
+
     // Staff: mark a customer's open borrowing of a book as returned
     public function markAsReturned(Request $request)
     {
