@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use App\Models\Book;
 
 class BorrowingsController extends Controller
 {
@@ -24,7 +25,19 @@ class BorrowingsController extends Controller
             'return_date'    => ['required', 'date', 'after:borrowing_date'],
         ]);
 
-        // attach($ids, $pivotColumns): first the book id, then the extra columns
+        // Is this book already out (not returned) during these dates?
+        $isTaken = Book::find($data['book_id'])->customers()
+            ->wherePivot('is_returned', false)
+            ->wherePivot('borrowing_date', '<=', $data['return_date'])
+            ->wherePivot('return_date', '>=', $data['borrowing_date'])
+            ->exists();
+
+        if ($isTaken) {
+            return response()->json([
+                'message' => 'This book is already borrowed on these dates',
+            ], 422);
+        }
+
         auth()->user()->books()->attach(
             $data['book_id'],
             [
@@ -35,24 +48,6 @@ class BorrowingsController extends Controller
         );
 
         return response()->json(['message' => 'Book borrowed successfully'], 201);
-    }
-
-    // Customer: cancel an OPEN borrowing of a book. Returned ones stay as history.
-    public function destroy($id)
-    {
-        $user = auth()->user();
-
-        $deleted = $user->books()
-            ->wherePivot('is_returned', false)
-            ->detach($id);
-
-        if ($deleted === 0) {
-            return response()->json([
-                'message' => 'You have no open borrowing for this book',
-            ], 404);
-        }
-
-        return response()->json(['message' => 'done']);
     }
 
     // Staff: mark a customer's open borrowing of a book as returned
